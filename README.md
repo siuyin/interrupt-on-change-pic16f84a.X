@@ -15,5 +15,5 @@ only one byte wide and will overflow after 256 pushes.
 
 This count may be read on with a pickit2 programmer thus:
 ```
-/pk2cmd -ppic16f84a -ge0-4 -r -t
+./pk2cmd -ppic16f84a -ge0-4 -r -t
 ```
