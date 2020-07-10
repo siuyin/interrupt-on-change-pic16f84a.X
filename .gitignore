@@ -1,0 +1,7 @@
+*.swp
+*secret*
+Makefile
+build
+dist
+nbproject
+
