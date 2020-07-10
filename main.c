@@ -21,7 +21,7 @@
 #define BUTTON RB4
 #define UPPER_LED RB2
 #define LOWER_LED RB3
-const unsigned char button_pushed_task_period_ticks = 45;
+const unsigned char button_pushed_task_period_ticks = 2;
 volatile unsigned char button_pushed_task_ctr;
 volatile unsigned char tick; // system timer tick
 const unsigned char tmr0_reload_val = 248;
@@ -42,6 +42,7 @@ void __interrupt() interrupt_service_routine(void) {
 
     if (RBIE && RBIF) { // port b interrupt enable and interrupt request flag.
         if (BUTTON != 0) {
+            RBIF = 0; // it was not our button, re-enable interrupt and return.
             return;
         }
         LOWER_LED = ~LOWER_LED;
@@ -62,7 +63,7 @@ void main(void) {
     ei();
 
     unsigned char current_tick = 0;
-    while (1) {      
+    while (1) {
         check_button_pushed_and_toggle_LEDs();
         wait_for_next_tick(&current_tick);
     }
@@ -104,8 +105,7 @@ void check_button_pushed_and_toggle_LEDs(void) {
     if (button_pushed_task_ctr != 0) {
         return;
     }
-    UPPER_LED = ~UPPER_LED;
-    /*
+
     switch (button_state) {
         case released:
             if (BUTTON == 0) {
@@ -130,7 +130,7 @@ void check_button_pushed_and_toggle_LEDs(void) {
             UPPER_LED = ~UPPER_LED;
             break;
     }
-     */
+
     button_pushed_task_ctr = button_pushed_task_period_ticks;
 }
 
