@@ -43,8 +43,9 @@ void __interrupt() interrupt_service_routine(void) {
     if (RBIE && RBIF) { // port b interrupt enable and interrupt request flag.
         if (BUTTON == 0) {
             LOWER_LED = ~LOWER_LED;
+            RBIE = 0; // disable port b change interrupt, will be re-enabled in main line code.
         }
-        RBIF = 0;
+        RBIF = 0; // The interrupt flag bit(s) must be cleared in software before re-enabling interrupts to avoid infinite interrupt requests.
     }
 
 }
@@ -126,6 +127,7 @@ void check_button_pushed_and_toggle_LEDs(void) {
                 break;
             }
             button_state = released;
+            RBIE = 1; // enable port b change interrupt
             break;
     }
 
