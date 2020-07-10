@@ -41,11 +41,9 @@ void __interrupt() interrupt_service_routine(void) {
     }
 
     if (RBIE && RBIF) { // port b interrupt enable and interrupt request flag.
-        if (BUTTON != 0) {
-            RBIF = 0; // it was not our button, re-enable interrupt and return.
-            return;
+        if (BUTTON == 0) {
+            LOWER_LED = ~LOWER_LED;
         }
-        LOWER_LED = ~LOWER_LED;
         RBIF = 0;
     }
 
