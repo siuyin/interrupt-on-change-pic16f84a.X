@@ -108,6 +108,7 @@ void check_button_pushed_and_toggle_LEDs(void) {
         case released:
             if (BUTTON == 0) {
                 button_state = pushed;
+                UPPER_LED = ~UPPER_LED;
                 break;
             }
             button_state = released;
@@ -125,7 +126,6 @@ void check_button_pushed_and_toggle_LEDs(void) {
                 break;
             }
             button_state = released;
-            UPPER_LED = ~UPPER_LED;
             break;
     }
 
