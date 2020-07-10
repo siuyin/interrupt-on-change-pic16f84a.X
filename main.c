@@ -48,17 +48,24 @@ void __interrupt() interrupt_service_routine(void) {
         RBIF = 0; // The interrupt flag bit(s) must be cleared in software before re-enabling interrupts to avoid infinite interrupt requests.
     }
 
+    if (EEIE && EEIF) { // eeprom write was completed
+
+        EEIF = 0;
+    }
+
 }
 
 #define _XTAL_FREQ 740000   // 6.8k and 100pF resitor is 10% and capacitor is 20% tolerance
 void setup_TMR0_for_interrupts(void);
 void setup_portb_for_interrupt_on_change(void);
+void setup_eeprom_write_interrupt(void);
 void check_button_pushed_and_toggle_LEDs(void);
 void wait_for_next_tick(unsigned char *);
 
 void main(void) {
     setup_TMR0_for_interrupts();
     setup_portb_for_interrupt_on_change();
+    setup_eeprom_write_interrupt();
     ei();
 
     unsigned char current_tick = 0;
@@ -100,6 +107,13 @@ void setup_portb_for_interrupt_on_change(void) {
     RBIE = 1;
 }
 
+unsigned char button_pushed_times;
+
+void setup_eeprom_write_interrupt() {
+    button_pushed_times = eeprom_read(0);
+    EEIE = 1; // eeprom interrupt enable
+}
+
 void check_button_pushed_and_toggle_LEDs(void) {
     if (button_pushed_task_ctr != 0) {
         return;
@@ -110,6 +124,7 @@ void check_button_pushed_and_toggle_LEDs(void) {
             if (BUTTON == 0) {
                 button_state = pushed;
                 UPPER_LED = ~UPPER_LED;
+                eeprom_write(0,++button_pushed_times); // data can be read by the pickit2 programmer with: ./pk2cmd -ppic16f84a -ge0-4 -r -t
                 break;
             }
             button_state = released;
