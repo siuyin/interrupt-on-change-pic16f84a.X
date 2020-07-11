@@ -37,7 +37,7 @@ void main(void) {
     setup_TMR0_for_interrupts();
     setup_portb_for_interrupt_on_change();
     setup_eeprom_write_interrupt();
-    ei();
+    ei(); // enable interrupts
 
     while (1) {
         check_button_pushed_and_toggle_LEDs();
@@ -98,7 +98,7 @@ volatile enum button_state_t state;
 
 void check_button_pushed_and_toggle_LEDs(void) {
     static unsigned char lda; // lda: last done at
-    const unsigned char t = 2;
+    const unsigned char t = 2; // button check debounce period
 
     if (button_pushed_task_ctr != 0 || lda == tick) {
         return;
